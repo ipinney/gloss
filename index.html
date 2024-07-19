@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Germany BTC Sale Loss Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        img {
+            width: 200px;
+            height: auto;
+        }
+        .result {
+            font-size: 1.5em;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Germany BTC Sale Loss Calculator</h1>
+    <img src="https://upload.wikimedia.org/wikipedia/en/b/ba/Flag_of_Germany.svg" alt="German Flag">
+    <p>HFSP GERMANY</p>
+    <p>Germany sold 49,858 BTC for $2.90B at an average price of $57,900 USD.</p>
+    <p>Current BTC price: <span id="currentPrice">...</span> USD.</p>
+    <p class="result">Germany's loss: <span id="lossAmount">...</span> USD.</p>
+
+    <script>
+        const soldBTC = 49858;
+        const avgSalePrice = 57900; // Average sale price in USD
+
+        async function fetchCurrentBTCPrice() {
+            try {
+                const response = await fetch('https://api.coindesk.com/v1/bpi/currentprice/BTC.json');
+                const data = await response.json();
+                return data.bpi.USD.rate_float;
+            } catch (error) {
+                console.error('Error fetching current BTC price:', error);
+                return null;
+            }
+        }
+
+        async function updateLoss() {
+            const currentPrice = await fetchCurrentBTCPrice();
+            if (currentPrice !== null) {
+                const lossAmount = (avgSalePrice - currentPrice) * soldBTC;
+                document.getElementById('currentPrice').innerText = currentPrice.toFixed(0);
+                document.getElementById('lossAmount').innerText = lossAmount.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+            } else {
+                document.getElementById('currentPrice').innerText = 'Error fetching price';
+                document.getElementById('lossAmount').innerText = 'Error calculating loss';
+            }
+        }
+
+        window.onload = updateLoss;
+    </script>
+</body>
+</html>
